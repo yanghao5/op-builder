@@ -6,7 +6,7 @@ on:
       profile:
         description: "Set the firmware size (in MB)."
         required: true
-        default: "2048"
+        default: '2048'
       enable_docker:
         description: |
           Enable Docker
@@ -32,12 +32,14 @@ on:
         required: false
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
         - name: Checkout code
-        - uses: actions/checkout@v4
+          uses: actions/checkout@v4
+
         - name: Set executable permissions
-        - run: chmod +x ${{ github.workspace }}/x86-64/build.sh
+          run: chmod +x ${{ github.workspace }}/x86-64/build.sh
+
         - name: Validate PPPoE Inputs
           run: |
             if [[ "${{ inputs.enable_pppoe }}" == "yes" ]]; then
@@ -46,6 +48,7 @@ jobs:
                 exit 1
               fi
             fi
+
         - name: Build ImmortalWrt-x86-64-efi
           run: |
             profiles="${{ github.event.inputs.profile }}"
@@ -66,6 +69,7 @@ jobs:
                 -e PPPOE_PASSWORD=${{ inputs.pppoe_password }} \
                 immortalwrt/imagebuilder:x86-64-openwrt-24.10.0 /bin/bash /home/build/immortalwrt/build.sh
             done
+
         - name: Generate Firmware SHA-256
           run: |
             cp ${{ github.workspace }}/bin/targets/x86/64/*squashfs-combined-efi.img.gz ${{ github.workspace }}
@@ -73,14 +77,16 @@ jobs:
               sha256sum "$file" > "$file.sha256"
               sha256sum -c "$file.sha256"
             done
+
         - name: Create info
           run: |
-            if [ "${{ github.event.inputs.include_docker }}" == "yes" ]; then
+            if [ "${{ github.event.inputs.enable_docker }}" == "yes" ]; then
               extra_content="#### 默认带docker"
               echo -e "\n $extra_content" >> ${{ github.workspace }}/info.md
             else
               echo -e "NO docker"
             fi
+            
         - name: Upload ImmortWrt as release assets
           uses: softprops/action-gh-release@v2.2.1
           with:
