@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       profile:
-        description: "Set the firmware size (in MB)."
+        description: "Set the firmware size (in MB). Recommended firmware size: under 512 to reduce compilation time."
         required: true
-        default: '2048'
+        default: '512'
       enable_docker:
         description: |
           Enable Docker
         required: true
-        default: "yes"
+        default: "no"
         type: choice
         options:
           - "yes"
