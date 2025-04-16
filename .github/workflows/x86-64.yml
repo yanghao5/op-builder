@@ -96,5 +96,3 @@ jobs:
               ${{ github.workspace }}/*squashfs-combined-efi.img.gz
               ${{ github.workspace }}/*.sha256
             token: ${{ secrets.GITHUB_TOKEN }}
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
