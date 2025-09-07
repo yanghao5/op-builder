@@ -51,24 +51,19 @@ jobs:
 
         - name: Build ImmortalWrt-x86-64-efi
           run: |
-            profiles="${{ github.event.inputs.profile }}"
+            rootfs_partsize="${{ github.event.inputs.rootfs_partsize }}"
             include_docker="${{ github.event.inputs.enable_docker }}"
-            IFS=',' read -r -a profile_array <<< "$profiles"
-            
-            for profile in "${profile_array[@]}"; do
-              echo "Building for profile: $profile"
-              docker run --rm -i \
-                --user root \
-                -v "${{ github.workspace }}/bin:/home/build/immortalwrt/bin" \
-                -v "${{ github.workspace }}/files:/home/build/immortalwrt/files" \
-                -v "${{ github.workspace }}/x86-64/build.sh:/home/build/immortalwrt/build.sh" \
-                -e PROFILE=$profile \
-                -e INCLUDE_DOCKER=$include_docker \
-                -e ENABLE_PPPOE=${{ inputs.enable_pppoe }} \
-                -e PPPOE_ACCOUNT=${{ inputs.pppoe_account }} \
-                -e PPPOE_PASSWORD=${{ inputs.pppoe_password }} \
-                immortalwrt/imagebuilder:x86-64-openwrt-24.10.0 /bin/bash /home/build/immortalwrt/build.sh
-            done
+            docker run --rm -i \
+              --user root \
+              -v "${{ github.workspace }}/bin:/home/build/immortalwrt/bin" \
+              -v "${{ github.workspace }}/files:/home/build/immortalwrt/files" \
+              -v "${{ github.workspace }}/x86-64/build.sh:/home/build/immortalwrt/build.sh" \
+              -e rootfs_partsize=$rootfs_partsize \
+              -e INCLUDE_DOCKER=$include_docker \
+              -e ENABLE_PPPOE=${{ inputs.enable_pppoe }} \
+              -e PPPOE_ACCOUNT=${{ inputs.pppoe_account }} \
+              -e PPPOE_PASSWORD=${{ inputs.pppoe_password }} \
+              immortalwrt/imagebuilder:x86-64-openwrt-24.10.0 /bin/bash /home/build/immortalwrt/build.sh
 
         - name: Generate Firmware SHA-256
           run: |
