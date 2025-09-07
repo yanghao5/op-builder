@@ -3,7 +3,7 @@ name: x86-64
 on:
   workflow_dispatch:
     inputs:
-      profile:
+      rootfs_partsize:
         description: "Set the firmware size (in MB). Recommended firmware size: under 512 to reduce compilation time."
         required: true
         default: '512'
